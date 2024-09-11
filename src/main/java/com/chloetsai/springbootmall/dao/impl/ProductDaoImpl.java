@@ -26,7 +26,7 @@ public class ProductDaoImpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public Product getProductById(int productId) {
+    public Product getProductById(Integer productId) {
         String sql = "SELECT product_id, product_name, category, image_url, price, stock, " +
                      "description, created_date, last_modified_date" +
                      " FROM product WHERE product_id = :productId";
@@ -70,5 +70,28 @@ public class ProductDaoImpl implements ProductDao {
         int productId = keyHolder.getKey().intValue();
 
         return productId;
+    }
+
+    @Override
+    public void updateProduct(Integer productId,ProductRequest productRequest) {
+
+        String sql = "UPDATE product SET product_name = :productName, category = :category, " +
+                "     image_url = :imageUrl, price = :price, stock = :stock, description = :description," +
+                "     last_modified_date = :lastModifiedDate" +
+                "     WHERE product_id = :productId";
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("productId", productId);
+
+        map.put("productName", productRequest.getProductName());
+        map.put("category", productRequest.getCategory().name());
+        map.put("imageUrl", productRequest.getImageUrl());
+        map.put("price", productRequest.getPrice());
+        map.put("stock", productRequest.getStock());
+        map.put("description", productRequest.getDescription());
+
+        map.put("lastModifiedDate", new Date());
+
+        namedParameterJdbcTemplate.update(sql, map);
     }
 }
