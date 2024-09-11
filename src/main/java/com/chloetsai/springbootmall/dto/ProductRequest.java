@@ -1,17 +1,18 @@
 package com.chloetsai.springbootmall.dto;
 
 import com.chloetsai.springbootmall.constant.ProductCategory;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class ProductRequest {
 
-    @NotNull
+    @NotBlank
     private String productName;
 
     @NotNull
     private ProductCategory category;
 
-    @NotNull
+    @NotBlank
     private String imageUrl;
 
     @NotNull
