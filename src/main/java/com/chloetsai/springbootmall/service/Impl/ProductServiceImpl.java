@@ -1,7 +1,7 @@
 package com.chloetsai.springbootmall.service.Impl;
 
-import com.chloetsai.springbootmall.constant.ProductCategory;
 import com.chloetsai.springbootmall.dao.ProductDao;
+import com.chloetsai.springbootmall.dto.ProductQueryParams;
 import com.chloetsai.springbootmall.dto.ProductRequest;
 import com.chloetsai.springbootmall.model.Product;
 import com.chloetsai.springbootmall.service.ProductService;
@@ -17,8 +17,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductDao productDao;
 
     @Override
-    public List<Product> getProducts(ProductCategory category, String search) {
-        return productDao.getProducts(category, search);
+    public List<Product> getProducts(ProductQueryParams productQueryParams) {
+        return productDao.getProducts(productQueryParams);
     }
 
     @Override

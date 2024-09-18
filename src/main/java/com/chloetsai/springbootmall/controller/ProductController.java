@@ -1,6 +1,7 @@
 package com.chloetsai.springbootmall.controller;
 
 import com.chloetsai.springbootmall.constant.ProductCategory;
+import com.chloetsai.springbootmall.dto.ProductQueryParams;
 import com.chloetsai.springbootmall.dto.ProductRequest;
 import com.chloetsai.springbootmall.model.Product;
 import com.chloetsai.springbootmall.service.ProductService;
@@ -8,7 +9,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +25,11 @@ public class ProductController {
             @RequestParam(required = false) ProductCategory category,
             @RequestParam(required = false) String search
     ){
-        List<Product> productList = productService.getProducts(category,search);
+        ProductQueryParams productQueryParams = new ProductQueryParams();
+        productQueryParams.setCategory(category);
+        productQueryParams.setSearch(search);
+
+        List<Product> productList = productService.getProducts(productQueryParams);
 
         return ResponseEntity.status(HttpStatus.OK).body(productList);
     }
