@@ -5,6 +5,7 @@ import com.chloetsai.springbootmall.dto.ProductQueryParams;
 import com.chloetsai.springbootmall.dto.ProductRequest;
 import com.chloetsai.springbootmall.model.Product;
 import com.chloetsai.springbootmall.service.ProductService;
+import com.chloetsai.springbootmall.util.Page;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -24,7 +25,7 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(
+    public ResponseEntity<Page<Product>> getProducts(
             //查詢條件 Filtering
             //required = false, 將參數設為非必要的(可選的), 如果前端沒有傳參數進來就會是 Null
             @RequestParam(required = false) ProductCategory category,
@@ -48,9 +49,20 @@ public class ProductController {
         productQueryParams.setLimit(limit);
         productQueryParams.setOffset(offset);
 
+        //取得 product list
         List<Product> productList = productService.getProducts(productQueryParams);
 
-        return ResponseEntity.status(HttpStatus.OK).body(productList);
+        //取得 product 總數
+        Integer total = productService.countProduct(productQueryParams); //商品總筆數會因為查詢條件的不同而改變
+
+        //分頁
+        Page<Product> page = new Page<>();
+        page.setLimit(limit);
+        page.setOffset(offset);
+        page.setTotal(total);
+        page.setResult(productList);
+
+        return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
     @GetMapping("/products/{productId}")
