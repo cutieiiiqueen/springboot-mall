@@ -55,12 +55,12 @@ public class ProductController {
         //取得 product 總數
         Integer total = productService.countProduct(productQueryParams); //商品總筆數會因為查詢條件的不同而改變
 
-        //分頁
+        //分頁 pagination
         Page<Product> page = new Page<>();
         page.setLimit(limit);
         page.setOffset(offset);
         page.setTotal(total);
-        page.setResult(productList);
+        page.setResults(productList);
 
         return ResponseEntity.status(HttpStatus.OK).body(page);
     }
