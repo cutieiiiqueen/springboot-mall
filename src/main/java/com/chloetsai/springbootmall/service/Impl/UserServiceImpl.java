@@ -1,6 +1,7 @@
 package com.chloetsai.springbootmall.service.Impl;
 
 import com.chloetsai.springbootmall.dao.UserDao;
+import com.chloetsai.springbootmall.dto.UserLoginRequest;
 import com.chloetsai.springbootmall.dto.UserRegisterRequest;
 import com.chloetsai.springbootmall.model.User;
 import com.chloetsai.springbootmall.service.UserService;
@@ -41,5 +42,26 @@ public class UserServiceImpl implements UserService {
         return userDao.createUser(userRegisterRequest);
     }
 
+    @Override
+    public User login(UserLoginRequest userLoginRequest) {
+        // 根據用戶登入請求中的 Email 呼叫 userDao 查詢是否有該用戶
+        User user = userDao.getUserByEmail(userLoginRequest.getEmail());
+
+        // 如果查無此用戶，記錄警告日誌，並拋出 HTTP 400 (BAD_REQUEST) 的異常，表示用戶未註冊
+        if(user == null){
+            log.warn("該 email {} 尚未註冊", userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        // 檢查用戶提供的密碼是否與資料庫中的密碼匹配
+        if(user.getPassword().equals(userLoginRequest.getPassword())) {
+            // 如果密碼正確，返回用戶物件
+            return user;
+        } else {
+            // 如果密碼不正確，記錄警告日誌，並拋出 HTTP 400 (BAD_REQUEST) 的異常
+            log.warn("email {} 的密碼不正確", userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }

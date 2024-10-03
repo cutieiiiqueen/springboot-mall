@@ -1,5 +1,6 @@
 package com.chloetsai.springbootmall.controller;
 
+import com.chloetsai.springbootmall.dto.UserLoginRequest;
 import com.chloetsai.springbootmall.dto.UserRegisterRequest;
 import com.chloetsai.springbootmall.model.User;
 import com.chloetsai.springbootmall.service.UserService;
@@ -34,4 +35,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
+    @PostMapping("/users/login")
+    public ResponseEntity<User> login(@RequestBody @Valid UserLoginRequest userLoginRequest){
+        User user = userService.login(userLoginRequest);
+
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
 }
