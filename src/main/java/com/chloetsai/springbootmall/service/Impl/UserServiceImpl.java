@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 @Component
@@ -37,6 +38,10 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
+        // 使用 MD5 生成密碼的雜湊值
+        String hashedPassword = DigestUtils.md5DigestAsHex(userRegisterRequest.getPassword().getBytes());
+        userRegisterRequest.setPassword(hashedPassword);
+
         // 創建帳號
         // 如果用戶不存在，呼叫 userDao 的 createUser 方法來創建新的用戶，並返回新創建用戶的 ID
         return userDao.createUser(userRegisterRequest);
@@ -44,6 +49,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(UserLoginRequest userLoginRequest) {
+        // 檢查 user 是否存在
         // 根據用戶登入請求中的 Email 呼叫 userDao 查詢是否有該用戶
         User user = userDao.getUserByEmail(userLoginRequest.getEmail());
 
@@ -53,8 +59,12 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
+        // 使用 MD5 生成密碼的雜湊值
+        String hashedPassword = DigestUtils.md5DigestAsHex(userLoginRequest.getPassword().getBytes());
+
+        // 檢查密碼
         // 檢查用戶提供的密碼是否與資料庫中的密碼匹配
-        if(user.getPassword().equals(userLoginRequest.getPassword())) {
+        if(user.getPassword().equals(hashedPassword)) {
             // 如果密碼正確，返回用戶物件
             return user;
         } else {
