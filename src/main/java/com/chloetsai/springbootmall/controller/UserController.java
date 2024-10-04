@@ -21,7 +21,7 @@ public class UserController {
     /**
      * 用於處理用戶註冊請求的控制器方法
      *
-     * @PostMapping 表示此方法處理發送到 "/user/register" 路徑的 POST 請求
+     * @PostMapping 表示此方法處理發送到 "/users/register" 路徑的 POST 請求
      */
     @PostMapping("/users/register")
     public ResponseEntity<User> register(@RequestBody @Valid UserRegisterRequest userRegisterRequest) {
