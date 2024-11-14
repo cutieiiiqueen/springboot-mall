@@ -27,7 +27,7 @@ public class UserDaoImpl implements UserDao {
     public User getUserById(Integer userId) {
 
         String sql = "SELECT user_id, email, password, created_date, last_modified_date " +
-                     "FROM \"user\" " +
+                     "FROM `user` " +
                      "WHERE user_id = :userId";
 
         Map<String,Object> map = new HashMap<>();

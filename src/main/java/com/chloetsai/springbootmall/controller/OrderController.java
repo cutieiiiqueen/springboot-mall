@@ -19,7 +19,7 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/users/{userId}/orders")
-    public ResponseEntity<?> createOrder(@PathVariable Integer userId,
+    public ResponseEntity<Order> createOrder(@PathVariable Integer userId,
                                          @RequestBody @Valid CreateOrderRequest createOrderRequest){
 
         // orderService.createOrder這方法會返回一個orderId的值
