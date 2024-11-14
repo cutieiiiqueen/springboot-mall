@@ -1,8 +1,12 @@
 package com.chloetsai.springbootmall.dao.impl;
 
 import com.chloetsai.springbootmall.dao.OrderDao;
+import com.chloetsai.springbootmall.model.Order;
 import com.chloetsai.springbootmall.model.OrderItem;
+import com.chloetsai.springbootmall.rowmapper.OrderItemMapper;
+import com.chloetsai.springbootmall.rowmapper.OrderRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -19,6 +23,43 @@ public class OrderDaoImpl implements OrderDao {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+
+    @Override
+    public Order getOrderById(Integer orderId) {
+
+        String sql = "SELECT `order`.order_id, `order`.user_id, `order`.total_amount, `order`.created_date, `order`.last_modified_date " +
+                "FROM `order` " +
+                "WHERE `order`.order_id = :orderId";
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("orderId",orderId);
+
+        List<Order> orderList = namedParameterJdbcTemplate.query(sql,map, new OrderRowMapper());
+
+        if(orderList.size()>0){
+            return orderList.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public List<OrderItem> getOrderItemsByOrderId(Integer orderId) {
+
+        String sql = "SELECT order_item_id, order_item.order_id, order_item.product_id, quantity, amount, " +
+                "product.product_name, product.image_url " +
+                "FROM order_item " +
+                "LEFT JOIN product ON order_item.product_id = product.product_id " +
+                "WHERE order_item.order_id = :orderId";
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderId",orderId);
+
+        List<OrderItem> orderItemList = namedParameterJdbcTemplate.query(sql, map, new OrderItemMapper());
+
+        return orderItemList;
+    }
 
     @Override
     public Integer createOrder(Integer userId, Integer totalAmount) {
