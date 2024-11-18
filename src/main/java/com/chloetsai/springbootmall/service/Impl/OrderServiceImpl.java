@@ -6,6 +6,7 @@ import com.chloetsai.springbootmall.dao.UserDao;
 import com.chloetsai.springbootmall.dao.impl.ProductDaoImpl;
 import com.chloetsai.springbootmall.dto.BuyItem;
 import com.chloetsai.springbootmall.dto.CreateOrderRequest;
+import com.chloetsai.springbootmall.dto.OrderQueryParams;
 import com.chloetsai.springbootmall.model.Order;
 import com.chloetsai.springbootmall.model.OrderItem;
 import com.chloetsai.springbootmall.model.Product;
@@ -36,6 +37,27 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private UserDao userDao;
 
+
+    @Override
+    public Integer countOrder(OrderQueryParams orderQueryParams) {
+        return orderDao.countOrder(orderQueryParams);
+    }
+
+    @Override
+    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+        // 找出符合這批條件的訂單
+        List<Order> orderList = orderDao.getOrders(orderQueryParams);
+
+        // 取得每個訂單所對應的訂單明細，並設定到該訂單中
+        for(Order order : orderList) {
+
+            List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(order.getOrder_id());
+
+            // 將訂單明細列表放入訂單中
+            order.setOrderItemList(orderItemList);
+        }
+        return orderList;
+    }
 
     @Override
     public Order getOrderById(Integer orderId) {

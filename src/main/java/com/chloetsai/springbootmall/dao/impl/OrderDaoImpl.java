@@ -1,6 +1,7 @@
 package com.chloetsai.springbootmall.dao.impl;
 
 import com.chloetsai.springbootmall.dao.OrderDao;
+import com.chloetsai.springbootmall.dto.OrderQueryParams;
 import com.chloetsai.springbootmall.model.Order;
 import com.chloetsai.springbootmall.model.OrderItem;
 import com.chloetsai.springbootmall.rowmapper.OrderItemMapper;
@@ -24,6 +25,45 @@ public class OrderDaoImpl implements OrderDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+
+    @Override
+    public Integer countOrder(OrderQueryParams orderQueryParams) {
+
+        String sql = "SELECT count(*) FROM `order` WHERE 1=1";
+
+        Map<String, Object> map = new HashMap<>();
+
+        // 查詢條件
+        sql = addFilteringSql(sql, map, orderQueryParams);
+
+        Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+
+        return total;
+    }
+
+    @Override
+    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+
+        String sql = "SELECT `order`.order_id, `order`.user_id, total_amount, `order`.created_date, `order`.last_modified_date" +
+                " FROM `order`" +
+                "WHERE 1=1 ";
+        Map<String, Object> map = new HashMap<>();
+
+        // 查詢條件
+        sql = addFilteringSql(sql, map, orderQueryParams);
+
+        // 排序
+        sql = sql + " ORDER BY created_date DESC";
+
+        // 分頁
+        sql = sql + " LIMIT :limit OFFSET :offset";
+        map.put("limit", orderQueryParams.getLimit());
+        map.put("offset", orderQueryParams.getOffset());
+
+        List<Order> orderList = namedParameterJdbcTemplate.query(sql, map, new OrderRowMapper());
+
+        return orderList;
+    }
 
     @Override
     public Order getOrderById(Integer orderId) {
@@ -117,5 +157,16 @@ public class OrderDaoImpl implements OrderDao {
         }
 
         namedParameterJdbcTemplate.batchUpdate(sql, parameterSources);
+    }
+
+    // 提煉程式
+    private String addFilteringSql(String sql, Map<String, Object> map, OrderQueryParams orderQueryParams) {
+
+        // 如果 userId 不為 null 則將條件拼接上去，並將 userId put 到 map 裡面
+        if(orderQueryParams.getUserId() != null){
+            sql += " AND `order`.`user_id` = :userId ";
+            map.put("userId", orderQueryParams.getUserId());
+        }
+        return sql;
     }
 }
