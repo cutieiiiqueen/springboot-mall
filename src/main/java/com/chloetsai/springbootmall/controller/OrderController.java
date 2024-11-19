@@ -22,7 +22,7 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping("/users/{userId}/orders")
-    public ResponseEntity<?> getOrders(@PathVariable Integer userId,
+    public ResponseEntity<Page<Order>> getOrders(@PathVariable Integer userId,
                                        @RequestParam(defaultValue = "10") @Max(1000) @Min(0) Integer limit,
                                        @RequestParam(defaultValue = "0") @Min(0) Integer offset){
 

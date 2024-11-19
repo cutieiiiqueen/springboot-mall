@@ -51,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
         // 取得每個訂單所對應的訂單明細，並設定到該訂單中
         for(Order order : orderList) {
 
-            List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(order.getOrder_id());
+            List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(order.getOrderId());
 
             // 將訂單明細列表放入訂單中
             order.setOrderItemList(orderItemList);
